@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CRP Verification</title>
+<title>CRP OAuth Verification</title>
 <style>
     body {
         font-family: Arial, sans-serif;
         margin: 0;
         padding: 20px;
-        background-color: #2e2e2e; 
+        background-color: #2e2e2e;
         color: #fff;
         text-align: center;
     }
@@ -42,22 +42,38 @@
 </style>
 </head>
 <body>
-    <h1>CRP Verification</h1>
-    <p>Tap the button below to start Roblox account verification and access CRP features inside the app.</p>
+    <h1>CRP OAuth Verification</h1>
+    <p id="message">Loading...</p>
 
-    <a href="https://www.roblox.com/age-verification" target="_blank" class="btn" id="verifyBtn">Start Verification</a>
+    <a href="#" target="_blank" class="btn" id="verifyBtn">Start Verify</a>
 
     <script>
-        const callbackURL = "myapp://verified"; // <-- Replace with your app’s callback URL
-        const button = document.getElementById("verifyBtn");
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        const state = params.get('state'); // optional
+        const messageEl = document.getElementById('message');
+        const button = document.getElementById('verifyBtn');
 
-        button.addEventListener("click", () => {
-            // Open Roblox verification in a new tab (already handled by href)
-            // Then, optionally redirect the app back after a short delay
-            setTimeout(() => {
-                window.location.href = callbackURL;
-            }, 2000); // Adjust delay if needed
-        });
+        // Replace with your OAuth info
+        const clientId = "3362187719529762125";
+        const redirectUri = window.location.href.split('?')[0]; // callback hosted on this page
+        const scope = "openid";
+        const randomState = "123abc"; // generate dynamically if needed
+
+        if (code) {
+            // User returned from Roblox OAuth
+            messageEl.textContent = "✅ Verification complete! You can now return to the app.";
+            button.style.display = "none";
+
+            // Optional: redirect to your app
+            // window.location.href = "myapp://verified?code=" + code;
+
+        } else {
+            // No code → show the Start Verify button
+            messageEl.textContent = "Tap the button below to start Roblox verification.";
+            button.href = `https://auth.roblox.com/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&state=${randomState}`;
+        }
     </script>
 </body>
 </html>
+
